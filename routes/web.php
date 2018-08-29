@@ -86,6 +86,10 @@ Route::group(['prefix' => '/notifications', 'as' => 'notifications.', 'middlewar
     Route::get('/{id}', 'NotificationsController@show')->name('show');
 });
 
+Route::group(['prefix' => '/private_messages', 'as' => 'private_messages.', 'middleware' => 'auth'], function () {
+    Route::get('/', 'PrivateMessagesController@index')->name('index');
+});
+
 # Restricted Admin URLs
 Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin',
     'namespace' => 'Admin', 'as' => 'admin.'], function () {
