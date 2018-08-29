@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App;
+use Illuminate\Support\Facades\Auth;
 
 class PrivateMessagesController extends Controller
 {
@@ -21,19 +22,75 @@ class PrivateMessagesController extends Controller
     }
 
     /**
-     * Show the messages overview.
+     * Show message inbox
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function inbox()
     {
         $user = auth()->user();
 
-        $items = App\PrivateMessage::where('recipient_id', $user)->orderBy('created_at', 'desc')->get();
+        $items = App\PrivateMessage::where('recipient_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->with('user')
+            ->get();
 
         return view('privatemessages.index')->with([
             'user' => $user,
-            'items' => $items
+            'items' => $items,
+            'inbox' => true
         ]);
+    }
+
+    /**
+     * Show message sent
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function sent()
+    {
+        $user = auth()->user();
+
+        $items = App\PrivateMessage::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->with('user')
+            ->get();
+
+        return view('privatemessages.index')->with([
+            'user' => $user,
+            'items' => $items,
+            'inbox' => false
+        ]);
+    }
+
+    /**
+     * Create private message form
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function create()
+    {
+        //$this->authorize('create', \App\PrivateMessage::class);
+        return view('privatemessages.create');
+    }
+
+    /**
+     * Send private message
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function send(Request $request)
+    {
+        $privateMessage = new App\PrivateMessage();
+        $privateMessage->fill($request->all());
+        $privateMessage->user_id = Auth::id();
+        $privateMessage->recipient_id = Auth::id();
+        $privateMessage->save();
+
+        return redirect()->route('private_messages.inbox')->with('success', 'Message sent successfully.');
     }
 }

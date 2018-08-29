@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use \App\Traits\RandomId;
+use Illuminate\Http\Request;
 
 class PrivateMessage extends Model
 {
@@ -15,8 +16,8 @@ class PrivateMessage extends Model
     {
         parent::boot();
 
-        static::created(function (User $user) {
-            $user->generateUniqueId();
+        static::created(function (PrivateMessage $message) {
+            $message->generateUniqueId();
         });
     }
 
