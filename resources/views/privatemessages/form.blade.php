@@ -4,7 +4,13 @@
         <div class="col-12 col-lg-12">
             <div class="form-group">
                 {{ Form::label('recipient', 'Recipient') }}
-                {{ Form::text('recipient', null, ['class' => 'form-control']) }}
+                {{ Form::select('recipient', $recipients, null, [
+                    'class' => 'form-control selectpicker',
+                    'data-live-search' => 'true',
+                    'placeholder' => 'Choose recipient...',
+                    'multiple' => false
+                 ])}}
+
             </div>
 
             <div class="form-group">

@@ -27,7 +27,7 @@
                     @if(count($items) > 0)
                         <div class="list-group">
                         @foreach($items as $privateMessage)
-                            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start @if($privateMessage->read_at === null) list-group-item-dark @endif">
+                            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start @if(null === $privateMessage->read_at and 1 == $inbox) list-group-item-secondary @endif">
                                 <div class="d-flex justify-content-between">
                                     <h5 class="mb-1">{{ $privateMessage->user->name }}</h5>
                                     <small>{{ $privateMessage->created_at }}</small>

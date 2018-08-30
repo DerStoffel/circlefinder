@@ -71,8 +71,14 @@ class PrivateMessagesController extends Controller
      */
     public function create()
     {
+        $recipients = App\User::where('id', '<>', \auth()->user()->getAuthIdentifier())->get()->mapWithKeys(function($item) {
+            return [$item['id'] => $item['name']];
+        });
+
         //$this->authorize('create', \App\PrivateMessage::class);
-        return view('privatemessages.create');
+        return view('privatemessages.create')->with([
+            'recipients' => $recipients,
+        ]);
     }
 
     /**
@@ -88,7 +94,7 @@ class PrivateMessagesController extends Controller
         $privateMessage = new App\PrivateMessage();
         $privateMessage->fill($request->all());
         $privateMessage->user_id = Auth::id();
-        $privateMessage->recipient_id = Auth::id();
+        $privateMessage->recipient_id = $request['recipient'];
         $privateMessage->save();
 
         return redirect()->route('private_messages.inbox')->with('success', 'Message sent successfully.');
