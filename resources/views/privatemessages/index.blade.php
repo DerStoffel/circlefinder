@@ -19,7 +19,7 @@
             <div class="card-body row">
                 <div class="col-12 col-lg-2">
                     <div class="btn-group-vertical">
-                        <a href="{{ route('private_messages.inbox') }}" class="btn btn-secondary @if(1 == $inbox) active @endif">Inbox <span class="badge badge-light">4</span></a>
+                        <a href="{{ route('private_messages.inbox') }}" class="btn btn-secondary @if(1 == $inbox) active @endif">Inbox @if(0 < $unreadAmount)<span class="badge badge-light">{{ $unreadAmount }}</span>@endif</a>
                         <a href="{{ route('private_messages.sent') }}" class="btn btn-secondary @if(0 == $inbox) active @endif">Sent</a>
                     </div>
                 </div>

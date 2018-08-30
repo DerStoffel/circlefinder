@@ -35,8 +35,16 @@ class PrivateMessagesController extends Controller
             ->with('user')
             ->get();
 
+        $unreadAmount = $items->reduce(function ($carry, $item) {
+            if ($item->read_at == null) {
+                $carry++;
+            }
+            return $carry;
+        }, 0);
+
         return view('privatemessages.index')->with([
             'user' => $user,
+            'unreadAmount' => $unreadAmount,
             'items' => $items,
             'inbox' => true
         ]);
@@ -56,8 +64,13 @@ class PrivateMessagesController extends Controller
             ->with('user')
             ->get();
 
+        $unreadItems = App\PrivateMessage::where('recipient_id', Auth::id())
+            ->where('read_at', null)
+            ->get();
+
         return view('privatemessages.index')->with([
             'user' => $user,
+            'unreadAmount' => $unreadItems->count(),
             'items' => $items,
             'inbox' => false
         ]);
@@ -71,7 +84,7 @@ class PrivateMessagesController extends Controller
      */
     public function create()
     {
-        $recipients = App\User::where('id', '<>', \auth()->user()->getAuthIdentifier())->get()->mapWithKeys(function($item) {
+        $recipients = App\User::where('id', '<>', \auth()->user()->getAuthIdentifier())->get()->mapWithKeys(function ($item) {
             return [$item['id'] => $item['name']];
         });
 
