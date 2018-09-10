@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class PrivateMessagesController extends Controller
@@ -82,15 +83,26 @@ class PrivateMessagesController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function create()
+    public function create($uuid = null)
     {
-        $recipients = App\User::where('id', '<>', \auth()->user()->getAuthIdentifier())->get()->mapWithKeys(function ($item) {
-            return [$item['id'] => $item['name']];
-        });
+        $replyToMessage = null;
+        $preSelect = null;
+        if (null != $uuid) {
+            $replyToMessage = App\PrivateMessage::withUuid($uuid)->firstOrFail();
+            $recipient = App\User::find($replyToMessage->user_id)->firstOrFail();
+            $recipients = Collection::make([$recipient->id => $recipient->name]);
+            $preSelect = $recipient->id;
+        } else {
+            $recipients = App\User::where('id', '<>', \auth()->user()->getAuthIdentifier())->get()->mapWithKeys(function ($item) {
+                return [$item['id'] => $item['name']];
+            });
+        }
 
         //$this->authorize('create', \App\PrivateMessage::class);
         return view('privatemessages.create')->with([
             'recipients' => $recipients,
+            'replyToMessage' => $replyToMessage,
+            'preSelect' => $preSelect,
         ]);
     }
 

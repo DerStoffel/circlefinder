@@ -28,6 +28,8 @@
                     </div>
                 </div>
             </div>
+            <a href="{{ route('private_messages.reply', ['uuid' => $privateMessage->uuid]) }}" class="btn btn-success">Reply</a>
+            <a href="{{ route('private_messages.inbox') }}" class="btn btn-light">Cancel</a>
         </div>
     </div>
 
