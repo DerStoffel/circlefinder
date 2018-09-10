@@ -112,4 +112,26 @@ class PrivateMessagesController extends Controller
 
         return redirect()->route('private_messages.inbox')->with('success', 'Message sent successfully.');
     }
+
+    /**
+     * Read private message
+     *
+     * @param         $uuid
+     * @param Request $request
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function read($uuid, Request $request)
+    {
+        $privateMessage = App\PrivateMessage::withUuid($uuid)->firstOrFail();
+        if (null == $privateMessage->read_at && Auth::id() != $privateMessage->user_id) {
+            $privateMessage->read_at = new \DateTime();
+            $privateMessage->save();
+        }
+
+        return view('privatemessages.message')->with([
+            'privateMessage' => $privateMessage,
+            'auth_id' => Auth::id()
+        ]);
+    }
 }

@@ -91,6 +91,7 @@ Route::group(['prefix' => '/private_messages', 'as' => 'private_messages.', 'mid
     Route::get('/sent', 'PrivateMessagesController@sent')->name('sent');
     Route::get('/create', 'PrivateMessagesController@create')->name('create');
     Route::post('/send', 'PrivateMessagesController@send')->name('send');
+    Route::get('/{uuid}/read', 'PrivateMessagesController@read')->name('read');
 });
 
 # Restricted Admin URLs
