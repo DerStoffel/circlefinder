@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class PrivateMessagesController extends Controller
 {
-    private $items_per_page = 0;
-
     /**
      * Create a new controller instance.
      *
@@ -19,16 +17,18 @@ class PrivateMessagesController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->items_per_page = config('circle.listing.items_per_page');
     }
 
     /**
      * Show message inbox
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function inbox()
     {
+        $this->authorize('inbox', App\PrivateMessage::class);
+
         $user = auth()->user();
 
         $items = App\PrivateMessage::where('recipient_id', Auth::id())
@@ -37,7 +37,7 @@ class PrivateMessagesController extends Controller
             ->get();
 
         $unreadAmount = $items->reduce(function ($carry, $item) {
-            if ($item->read_at == null) {
+            if (null === $item->read_at) {
                 $carry++;
             }
             return $carry;
@@ -55,9 +55,12 @@ class PrivateMessagesController extends Controller
      * Show message sent
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function sent()
     {
+        $this->authorize('sent', App\PrivateMessage::class);
+
         $user = auth()->user();
 
         $items = App\PrivateMessage::where('user_id', Auth::id())
@@ -85,6 +88,8 @@ class PrivateMessagesController extends Controller
      */
     public function create($uuid = null)
     {
+        $this->authorize('create', App\PrivateMessage::class);
+
         $replyToMessage = null;
         $preSelect = null;
         if (null != $uuid) {
@@ -116,11 +121,9 @@ class PrivateMessagesController extends Controller
      */
     public function send(Request $request)
     {
-        $privateMessage = new App\PrivateMessage();
-        $privateMessage->fill($request->all());
-        $privateMessage->user_id = Auth::id();
-        $privateMessage->recipient_id = $request['recipient'];
-        $privateMessage->save();
+        $this->authorize('send', App\PrivateMessage::class);
+
+        App\PrivateMessage::create(Auth::id(), $request);
 
         return redirect()->route('private_messages.inbox')->with('success', 'Message sent successfully.');
     }
@@ -132,11 +135,14 @@ class PrivateMessagesController extends Controller
      * @param Request $request
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function read($uuid, Request $request)
     {
+        $this->authorize('read', App\PrivateMessage::class);
+
         $privateMessage = App\PrivateMessage::withUuid($uuid)->firstOrFail();
-        if (null == $privateMessage->read_at && Auth::id() != $privateMessage->user_id) {
+        if (null === $privateMessage->read_at && Auth::id() !== $privateMessage->user_id) {
             $privateMessage->read_at = new \DateTime();
             $privateMessage->save();
         }

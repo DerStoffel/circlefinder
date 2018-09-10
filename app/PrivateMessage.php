@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use \App\Traits\RandomId;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Self_;
 
 class PrivateMessage extends Model
 {
@@ -50,5 +51,14 @@ class PrivateMessage extends Model
         }
 
         return $rules;
+    }
+
+    public static function create($userid, Request $request)
+    {
+        $privateMessage = new self;
+        $privateMessage->fill($request->all());
+        $privateMessage->user_id = $userid;
+        $privateMessage->recipient_id = $request['recipient'];
+        $privateMessage->save();
     }
 }
