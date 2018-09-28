@@ -139,9 +139,9 @@ class PrivateMessagesController extends Controller
      */
     public function read($uuid, Request $request)
     {
-        $this->authorize('read', App\PrivateMessage::class);
-
         $privateMessage = App\PrivateMessage::withUuid($uuid)->firstOrFail();
+        $this->authorize('read', [App\PrivateMessage::class, $privateMessage]);
+
         if (null === $privateMessage->read_at && Auth::id() !== $privateMessage->user_id) {
             $privateMessage->read_at = new \DateTime();
             $privateMessage->save();
