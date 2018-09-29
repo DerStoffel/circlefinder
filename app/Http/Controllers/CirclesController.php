@@ -30,7 +30,7 @@ class CirclesController extends Controller
     public function create()
     {
         $this->authorize('create', \App\Circle::class);
-        return view('privatemessages.create');
+        return view('circles.create');
     }
 
     public function store(Request $request)
