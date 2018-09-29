@@ -122,6 +122,7 @@ class PrivateMessagesController extends Controller
     public function send(Request $request)
     {
         $this->authorize('send', App\PrivateMessage::class);
+        $this->validate($request, App\PrivateMessage::validationRules());
         App\PrivateMessage::create($request->all());
 
         return redirect()->route('private_messages.inbox')->with('success', 'Message sent successfully.');
