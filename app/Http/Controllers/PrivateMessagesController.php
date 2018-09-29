@@ -113,7 +113,7 @@ class PrivateMessagesController extends Controller
 
     /**
      * Send private message
-     *
+     *m
      * @param Request $request
      *
      * @return \Illuminate\Http\RedirectResponse
