@@ -1,17 +1,7 @@
-{!! Form::open(['route' => 'private_messages.send']) !!}
+{!! Form::open(['route' => ['private_messages.send', 'uuid' => $recipient->uuid]]) !!}
 
     <div class="row mb-4">
         <div class="col-12 col-lg-12">
-            <div class="form-group">
-                {{ Form::label('recipient_id', 'Recipient') }}
-                {{ Form::select('recipient_id', $recipients, $preSelect, [
-                    'class' => 'form-control selectpicker',
-                    'data-live-search' => 'true',
-                    'placeholder' => 'Choose recipient...',
-                    'multiple' => false
-                 ])}}
-            </div>
-
             <div class="form-group">
                 {{ Form::label('body', 'Message') }}
                 {{ Form::textarea('body', null, ['class' => 'form-control']) }}

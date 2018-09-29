@@ -8,9 +8,6 @@
         <div class="col-12 col-lg-4">
             <h1>@yield('title')</h1>
         </div>
-        <div class="col-12 col-lg-8 text-lg-right">
-            <a href="{{ route('private_messages.create') }}" class="btn btn-success mb-4">Write a new message!</a>
-        </div>
     </div>
     <div class="card mb-4 bg-light">
         <h5 class="card-header">Your private messages</h5>
@@ -29,7 +26,7 @@
                 </div>
             </div>
             @if($auth_id !== $privateMessage->user_id)
-            <a href="{{ route('private_messages.reply', ['uuid' => $privateMessage->uuid]) }}" class="btn btn-success">Reply</a>
+            <a href="{{ route('private_messages.reply', ['uuid' => $privateMessage->user->uuid, 'replyUuid' => $privateMessage->uuid]) }}" class="btn btn-success">Reply</a>
             @endif
             <a href="{{ route('private_messages.inbox') }}" class="btn btn-light">Cancel</a>
         </div>

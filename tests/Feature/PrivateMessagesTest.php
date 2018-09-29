@@ -21,11 +21,11 @@ class PrivateMessagesTest extends TestCase
         $response->assertStatus(302);
         $response->assertRedirect('/login');
 
-        $response = $this->get(route('private_messages.create'));
+        $response = $this->get(route('private_messages.create', ['uuid' => '1234']));
         $response->assertStatus(302);
         $response->assertRedirect('/login');
 
-        $response = $this->post(route('private_messages.send'));
+        $response = $this->post(route('private_messages.send', ['uuid' => '1234']));
         $response->assertStatus(302);
         $response->assertRedirect('/login');
 
@@ -33,7 +33,7 @@ class PrivateMessagesTest extends TestCase
         $response->assertStatus(302);
         $response->assertRedirect('/login');
 
-        $response = $this->get(route('private_messages.reply', ['uuid' => '1234']));
+        $response = $this->get(route('private_messages.reply', ['uuid' => '1234', 'replyUuid' => '4321']));
         $response->assertStatus(302);
         $response->assertRedirect('/login');
     }
@@ -55,7 +55,8 @@ class PrivateMessagesTest extends TestCase
     public function testCanAccessCreate()
     {
         $user = $this->fetchUser();
-        $response = $this->actingAs($user)->get(route('private_messages.create'));
+        $recipient = $this->fetchUser();
+        $response = $this->actingAs($user)->get(route('private_messages.create', ['uuid' => $recipient->uuid]));
         $response->assertStatus(200);
     }
 
@@ -77,11 +78,12 @@ class PrivateMessagesTest extends TestCase
     public function testCanSendMessage()
     {
         $user = $this->fetchUser();
-        $response = $this->actingAs($user)->get(route('private_messages.create'));
+        $recipient = $this->fetchUser();
+        $response = $this->actingAs($user)->get(route('private_messages.create', ['uuid' => $recipient->uuid]));
         $response->assertStatus(200);
 
-        $recipient = $this->fetchUser();
-        $response = $this->actingAs($user)->post(route('private_messages.send'), [
+
+        $response = $this->actingAs($user)->post(route('private_messages.send', ['uuid' => $recipient->uuid]), [
             'body' => $this->fetchFaker()->text(),
             'recipient_id' => $recipient->id
         ]);

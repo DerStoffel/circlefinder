@@ -8,9 +8,6 @@
         <div class="col-12 col-lg-4">
             <h1>@yield('title')</h1>
         </div>
-        <div class="col-12 col-lg-8 text-lg-right">
-            <a href="{{ route('private_messages.create') }}" class="btn btn-success mb-4">Write a new message!</a>
-        </div>
     </div>
     
     <div class="card mb-4 bg-light">
