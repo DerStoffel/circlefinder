@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use \App\Traits\RandomId;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use phpDocumentor\Reflection\Types\Self_;
 
 class PrivateMessage extends Model
@@ -17,6 +18,12 @@ class PrivateMessage extends Model
     {
         parent::boot();
 
+        static::creating(function (PrivateMessage $message) {
+            if (Auth::check()) {
+                $message->user_id = Auth::id();
+            }
+        });
+
         static::created(function (PrivateMessage $message) {
             $message->generateUniqueId();
         });
@@ -27,7 +34,8 @@ class PrivateMessage extends Model
     ];
 
     protected $fillable = [
-        'body'
+        'body',
+        'recipient_id'
     ];
 
     public function recipient()
@@ -43,7 +51,8 @@ class PrivateMessage extends Model
     public static function validationRules($except = null)
     {
         $rules = [
-            'body' => 'required'
+            'body' => 'required',
+            'recipient_id' => 'required',
         ];
 
         if ($except) {
@@ -53,6 +62,7 @@ class PrivateMessage extends Model
         return $rules;
     }
 
+    /**
     public static function create($userid, Request $request)
     {
         $privateMessage = new self;
@@ -61,4 +71,5 @@ class PrivateMessage extends Model
         $privateMessage->recipient_id = $request['recipient'];
         $privateMessage->save();
     }
+     */
 }

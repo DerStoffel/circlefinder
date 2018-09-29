@@ -3,8 +3,8 @@
     <div class="row mb-4">
         <div class="col-12 col-lg-12">
             <div class="form-group">
-                {{ Form::label('recipient', 'Recipient') }}
-                {{ Form::select('recipient', $recipients, $preSelect, [
+                {{ Form::label('recipient_id', 'Recipient') }}
+                {{ Form::select('recipient_id', $recipients, $preSelect, [
                     'class' => 'form-control selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Choose recipient...',
